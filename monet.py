@@ -19,7 +19,8 @@ def scan_network(target, request):
     """Basic network scan using an ARP Request"""
     discovered = []
     i = 0
-    while i > request:
+    output = []
+    while i < int(request):
         req = scapy.ARP()
         req.pdst = str(target)
         ether = scapy.Ether()
@@ -36,7 +37,7 @@ def scan_network(target, request):
                 d = [r[1].psrc, r[1].hwsrc, mac_rP['result']['company']]
                 output.append(d)
                 discovered.append(r[1].psrc)
-        i = i + 1
+        i += 1
 
     table = AsciiTable(output)
     print(table.table)

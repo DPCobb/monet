@@ -1,4 +1,5 @@
 Click
+colorclass
 requests
 scapy-python3
 terminaltables

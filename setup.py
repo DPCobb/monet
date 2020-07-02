@@ -8,7 +8,8 @@ setup(
         'Click',
         'scapy-python3',
         'terminaltables',
-        'requests'
+        'requests',
+        'colorclass'
     ],
     entry_points='''
         [console_scripts]

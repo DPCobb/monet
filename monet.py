@@ -6,6 +6,7 @@ from terminaltables import AsciiTable
 import requests
 import json
 from colorclass import Color, Windows
+import socket
 
 
 @click.group()
@@ -20,7 +21,7 @@ def scan_network(target, request):
     """Basic network scan using an ARP Request"""
     discovered = []
     i = 0
-    output = [["IP Address", "MAC Address", "Vendor"]]
+    output = [["IP Address", "MAC Address", "Vendor", "Name"]]
     while i < int(request):
         req = scapy.ARP()
         req.pdst = str(target)
@@ -34,7 +35,12 @@ def scan_network(target, request):
                 MAC_URL = 'http://macvendors.co/api/%s'
                 mac_r = requests.get(MAC_URL % str(r[1].hwsrc))
                 mac_rP = mac_r.json()
-                d = [r[1].psrc, r[1].hwsrc, mac_rP['result']['company']]
+                try:
+                    hostname = socket.gethostbyaddr(ipR)[0]
+                except:
+                    hostname = ""
+                d = [r[1].psrc, r[1].hwsrc, mac_rP['result']
+                     ['company'], hostname]
                 output.append(d)
                 discovered.append(r[1].psrc)
         i += 1
@@ -47,7 +53,7 @@ def scan_network(target, request):
 @click.option('--target', '--t', required=True, type=str, help="IP range to scan, ex: 192.168.1.1-254")
 def icmp_ping(target):
     """ICMP Ping Scan, a basic port scan using ICMP echo requests, replies indicate the source is alive."""
-    ans, unans = scapy.sr(scapy.IP(dst=str(target))/scapy.ICMP(), timeout=5)
+    ans, unans = scapy.sr(scapy.IP(dst=str(target))/scapy.ICMP(), timeout=10)
     output = [["IP Address"]]
     for r in ans:
         d = [r[1].src]
